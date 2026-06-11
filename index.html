@@ -1,9 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Mi Sitio Web</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>loduadro</title>
+<style>
+  @font-face {
+    font-family: 'Komika Axis';
+    src: local('Komika Axis');
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: linear-gradient(135deg, #0b1f0f 0%, #0f2e16 50%, #0b1f0f 100%);
+    color: #b6ffb0;
+    font-family: 'Komika Axis', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .title {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 5rem;
+    color: #4dff4d;
+    text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff0080;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .spacer-top {
+    height: 100vh;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+    padding-bottom: 100px;
+  }
+
+  .section-title {
+    font-size: 3rem;
+    color: #4dff4d;
+    text-shadow: 0 0 15px #00ff0090;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    text-align: center;
+  }
+
+  .scripts-button, .back-button {
+    background: linear-gradient(145deg, #1c4d1c, #0f3310);
+    border: 2px solid #4dff4d;
+    color: #b6ffb0;
+    font-family: 'Komika Axis', sans-serif;
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #00ff0040;
+    transition: all 0.2s ease;
+  }
+
+  .scripts-button:hover, .back-button:hover, .script-link-button:hover {
+    background: linear-gradient(145deg, #2a6e2a, #1c4d1c);
+    box-shadow: 0 0 25px #00ff0090;
+    transform: scale(1.05);
+  }
+
+  .scripts-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding: 30px;
+    border: 2px solid #2e7d32;
+    border-radius: 16px;
+    background: #0f2e1690;
+    box-shadow: 0 0 30px #00ff0030;
+  }
+
+  .scripts-panel.active {
+    display: flex;
+  }
+
+  .script-link-button {
+    background: linear-gradient(145deg, #1c4d1c, #0f3310);
+    border: 2px solid #4dff4d;
+    color: #b6ffb0;
+    font-family: 'Komika Axis', sans-serif;
+    font-size: 1.3rem;
+    padding: 15px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 0 15px #00ff0040;
+    transition: all 0.2s ease;
+  }
+
+  .contributors-text {
+    text-align: center;
+    font-size: 1.3rem;
+    line-height: 2;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    color: #c8ffc8;
+  }
+
+  .contributors-text b {
+    color: #4dff4d;
+  }
+</style>
 </head>
 <body>
-    <h1>¡Hola Mundo! Mi dominio loduadro.qzz.io funciona.</h1>
+
+  <div class="title" id="mainTitle">loduadro</div>
+
+  <div class="spacer-top"></div>
+
+  <div class="content">
+
+    <button class="scripts-button" id="scriptsBtn">Scripts</button>
+
+    <div class="scripts-panel" id="scriptsPanel">
+      <a href="https://scriptblox.com/script/Prison-Life-get-key-card-instant-no-key-142931" target="_blank" class="script-link-button">Get Key Card PL</a>
+      <button class="back-button" id="backBtn">Volver</button>
+    </div>
+
+    <div class="section-title" id="contribTitle">Contributors</div>
+
+    <div class="contributors-text" id="contribText">
+      Scripter Principal: <b>loduadro</b><br>
+      Scripter Funtions: <b>loduadro</b><br>
+      Scripter Fireservers: <b>anomaly7</b><br>
+      Scripter Guis: <b>loduadro</b><br>
+      Scripter Organization: <b>bmb</b><br>
+      Scripter Rayfield: <b>anomaly7</b><br>
+      Scripter Scripts Organization: <b>bmb</b><br>
+      Scripter Kavo UI: <b>bmb</b>
+    </div>
+
+  </div>
+
+<script>
+  const mainTitle = document.getElementById('mainTitle');
+  const contribTitle = document.getElementById('contribTitle');
+  const contribText = document.getElementById('contribText');
+
+  function updateFade(el, startFade, fadeDistance) {
+    const scrollY = window.scrollY;
+    let progress = (scrollY - startFade) / fadeDistance;
+    progress = Math.max(0, Math.min(1, progress));
+
+    const opacity = 1 - progress;
+    const scale = 1 - (progress * 0.5);
+
+    el.style.opacity = opacity;
+    el.style.transform = `scale(${scale})`;
+  }
+
+  function onScroll() {
+    updateFade(mainTitle, 0, window.innerHeight * 0.5);
+
+    const rect = contribTitle.getBoundingClientRect();
+    const viewportCenter = window.innerHeight / 2;
+    const distanceFromCenter = Math.abs(rect.top - viewportCenter);
+    const fadeRange = window.innerHeight * 0.6;
+
+    let progress = distanceFromCenter / fadeRange;
+    progress = Math.max(0, Math.min(1, progress));
+
+    const opacity = 1 - progress;
+    const scale = 1 - (progress * 0.5);
+
+    contribTitle.style.opacity = opacity;
+    contribTitle.style.transform = `scale(${scale})`;
+    contribText.style.opacity = opacity;
+    contribText.style.transform = `scale(${scale})`;
+  }
+
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+
+  const scriptsBtn = document.getElementById('scriptsBtn');
+  const scriptsPanel = document.getElementById('scriptsPanel');
+  const backBtn = document.getElementById('backBtn');
+
+  scriptsBtn.addEventListener('click', () => {
+    scriptsPanel.classList.add('active');
+    scriptsBtn.style.display = 'none';
+  });
+
+  backBtn.addEventListener('click', () => {
+    scriptsPanel.classList.remove('active');
+    scriptsBtn.style.display = 'inline-block';
+  });
+</script>
+
 </body>
 </html>
