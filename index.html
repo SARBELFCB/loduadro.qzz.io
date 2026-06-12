@@ -38,6 +38,20 @@
     pointer-events: none;
   }
 
+  .subtitle {
+    position: fixed;
+    top: 170px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #4dff4d;
+    text-shadow: 0 0 10px #00ff0090;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+    pointer-events: none;
+  }
+
   .spacer-top {
     height: 100vh;
   }
@@ -126,6 +140,7 @@
 <body>
 
   <div class="title" id="mainTitle">loduadro</div>
+  <div class="subtitle" id="mainSubtitle">just another scripter, loduadro</div>
 
   <div class="spacer-top"></div>
 
@@ -134,7 +149,7 @@
     <button class="scripts-button" id="scriptsBtn">Scripts</button>
 
     <div class="scripts-panel" id="scriptsPanel">
-      <a href="https://scriptblox.com/script/Prison-Life-get-key-card-instant-no-key-142931" target="_blank" class="script-link-button">Get Key Card PL</a>
+      <a href="TU_LINK_AQUI" target="_blank" class="script-link-button">NOMBRE DEL SCRIPT</a>
       <button class="back-button" id="backBtn">Volver</button>
     </div>
 
@@ -155,6 +170,7 @@
 
 <script>
   const mainTitle = document.getElementById('mainTitle');
+  const mainSubtitle = document.getElementById('mainSubtitle');
   const contribTitle = document.getElementById('contribTitle');
   const contribText = document.getElementById('contribText');
 
@@ -172,6 +188,7 @@
 
   function onScroll() {
     updateFade(mainTitle, 0, window.innerHeight * 0.5);
+    updateFade(mainSubtitle, 0, window.innerHeight * 0.5);
 
     const rect = contribTitle.getBoundingClientRect();
     const viewportCenter = window.innerHeight / 2;
