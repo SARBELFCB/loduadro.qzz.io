@@ -266,6 +266,16 @@
 
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
+      <p>Do you want to obfuscate the script?</p>
+      <div class="modal-buttons">
+        <button class="action-button" id="obfYes">Si</button>
+        <button class="action-button" id="obfNo">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="loadstringModalOverlay">
+    <div class="modal-box">
       <p>Do you want it to use <code>loadstring</code> automatically?</p>
       <div class="modal-buttons">
         <button class="action-button" id="modalYes">Si</button>
@@ -280,6 +290,9 @@
   const codeInput = document.getElementById('codeInput');
   const createBtn = document.getElementById('createBtn');
   const modalOverlay = document.getElementById('modalOverlay');
+  const obfYes = document.getElementById('obfYes');
+  const obfNo = document.getElementById('obfNo');
+  const loadstringModalOverlay = document.getElementById('loadstringModalOverlay');
   const modalYes = document.getElementById('modalYes');
   const modalNo = document.getElementById('modalNo');
   const loadstringBox = document.getElementById('loadstringBox');
@@ -336,6 +349,22 @@
 
   updateHighlight();
 
+  function obfuscateCode(code) {
+    const bytes = [];
+    for (let i = 0; i < code.length; i++) {
+      bytes.push(code.charCodeAt(i));
+    }
+
+    const chunks = [];
+    for (let i = 0; i < bytes.length; i += 20) {
+      chunks.push(bytes.slice(i, i + 20).join(','));
+    }
+
+    const tableLines = chunks.map(c => `{${c}}`).join(',\n');
+
+    return `local _0xA={\n${tableLines}\n}\nlocal _0xB=""\nfor _0xC=1,#_0xA do\n  for _0xD=1,#_0xA[_0xC] do\n    _0xB=_0xB..string.char(_0xA[_0xC][_0xD])\n  end\nend\nloadstring(_0xB)()`;
+  }
+
   async function createPastefyRaw(text) {
     const response = await fetch('https://pastefy.app/api/v2/paste', {
       method: 'POST',
@@ -355,20 +384,35 @@
     return `https://pastefy.app/${id}/raw`;
   }
 
+  let shouldObfuscate = false;
+
   createBtn.addEventListener('click', () => {
     const text = codeInput.value;
     if (!text.trim()) return;
     modalOverlay.classList.add('active');
   });
 
-  modalNo.addEventListener('click', async () => {
+  obfYes.addEventListener('click', () => {
+    shouldObfuscate = true;
     modalOverlay.classList.remove('active');
+    loadstringModalOverlay.classList.add('active');
+  });
+
+  obfNo.addEventListener('click', () => {
+    shouldObfuscate = false;
+    modalOverlay.classList.remove('active');
+    loadstringModalOverlay.classList.add('active');
+  });
+
+  modalNo.addEventListener('click', async () => {
+    loadstringModalOverlay.classList.remove('active');
     createBtn.disabled = true;
     createBtn.textContent = 'Creando...';
     statusBox.classList.add('active');
 
     try {
-      const rawUrl = await createPastefyRaw(codeInput.value);
+      const codeToSend = shouldObfuscate ? obfuscateCode(codeInput.value) : codeInput.value;
+      const rawUrl = await createPastefyRaw(codeToSend);
       window.location.href = rawUrl;
     } catch (e) {
       alert('Hubo un error al crear el raw. Intenta de nuevo.');
@@ -379,7 +423,7 @@
   });
 
   modalYes.addEventListener('click', async () => {
-    modalOverlay.classList.remove('active');
+    loadstringModalOverlay.classList.remove('active');
     createBtn.disabled = true;
     statusBox.classList.add('active');
 
@@ -399,7 +443,8 @@
     }
 
     try {
-      const rawUrl = await createPastefyRaw(codeInput.value);
+      const codeToSend = shouldObfuscate ? obfuscateCode(codeInput.value) : codeInput.value;
+      const rawUrl = await createPastefyRaw(codeToSend);
       const loadstringCode = `loadstring(game:HttpGet("${rawUrl}"))()`;
 
       createBtn.textContent = 'loadstring create';
