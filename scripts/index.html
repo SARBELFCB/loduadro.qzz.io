@@ -25,14 +25,19 @@
     flex-direction: column;
     align-items: center;
     padding: 60px 20px;
-    gap: 30px;
+    gap: 40px;
   }
 
-  h1 {
+  h1, h2 {
     color: #4dff4d;
     text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff0080;
     font-size: 3rem;
     text-align: center;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+    margin-top: 20px;
   }
 
   .result-box {
@@ -40,6 +45,7 @@
     max-width: 800px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 15px;
   }
 
@@ -73,6 +79,7 @@
     transition: all 0.2s ease;
     text-decoration: none;
     display: inline-block;
+    width: fit-content;
   }
 
   .action-button:hover {
@@ -91,6 +98,17 @@
     <button class="action-button" id="copyBtn">Copiar</button>
   </div>
 
+  <hr style="border: 1px dashed #4dff4d; width: 100%; max-width: 800px; opacity: 0.3; margin: 20px 0;">
+
+  <h2>Goal Battles Script</h2>
+
+  <div class="result-box">
+    <textarea class="result-textbox" id="loadstringBox2" rows="3" readonly></textarea>
+    <button class="action-button" id="copyBtn2">Copiar</button>
+  </div>
+
+  <hr style="border: none; margin-top: 20px;">
+
   <a href="../" class="action-button">Volver al inicio</a>
 
 <script>
@@ -103,6 +121,18 @@
     navigator.clipboard.writeText(loadstringBox.value).then(() => {
       copyBtn.textContent = 'Copiado!';
       setTimeout(() => copyBtn.textContent = 'Copiar', 1500);
+    });
+  });
+
+  const loadstringBox2 = document.getElementById('loadstringBox2');
+  const copyBtn2 = document.getElementById('copyBtn2');
+
+  loadstringBox2.value = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/SARBELFCB/goalbattlesscript/refs/heads/main/goalbattlesscript.lua"))()';
+
+  copyBtn2.addEventListener('click', () => {
+    navigator.clipboard.writeText(loadstringBox2.value).then(() => {
+      copyBtn2.textContent = 'Copiado!';
+      setTimeout(() => copyBtn2.textContent = 'Copiar', 1500);
     });
   });
 </script>
