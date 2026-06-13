@@ -140,6 +140,9 @@
   const createView = document.getElementById('createView');
   const viewView = document.getElementById('viewView');
   const codeInput = document.getElementById('codeInput');
+  const rawContent = document.getElementById('rawContent');
+  const rawLink = document.getElementById('rawLink');
+
   const createBtn = document.getElementById('createBtn');
   const rawContent = document.getElementById('rawContent');
   const rawLink = document.getElementById('rawLink');
@@ -160,7 +163,17 @@
       rawContent.textContent = decoded;
       rawLink.textContent = window.location.href;
       viewView.classList.add('active');
-      document.querySelector('h1').textContent = 'Raw';
+      document.querySelector('h1').style.display = 'none';
+      document.body.style.padding = '0';
+      document.body.style.alignItems = 'stretch';
+      rawContent.style.maxWidth = 'none';
+      rawContent.style.border = 'none';
+      rawContent.style.borderRadius = '0';
+      rawContent.style.minHeight = '100vh';
+      rawContent.style.boxShadow = 'none';
+      rawContent.style.background = '#0b1f0f';
+      rawLink.style.display = 'none';
+      document.querySelectorAll('.action-button').forEach(b => b.style.display = 'none');
     } catch (e) {
       createView.classList.add('active');
     }
