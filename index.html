@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="7i7XxW5u38Eoh0Szsg12_mx8rj4v9OAxcvXu3l1Ifro" />
 <title>loduadro</title>
-<meta name="description" content="pagina insana creada por mi persona xdxxdxdxxdx">
+<meta name="description" content="pagina insana echa por mi persona eoeoeo xddd">
 <meta name="keywords" content="loduadro, scripts, roblox, scripting">
 <meta name="author" content="loduadro">
 <meta name="robots" content="index, follow">
@@ -209,6 +209,26 @@
   .result-textbox:focus {
     outline: none;
   }
+
+  .copy-icon-btn {
+    background: linear-gradient(145deg, #1c4d1c, #0f3310);
+    border: 2px solid #4dff4d;
+    color: #b6ffb0;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #00ff0040;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .copy-icon-btn:hover {
+    background: linear-gradient(145deg, #2a6e2a, #1c4d1c);
+    box-shadow: 0 0 25px #00ff0090;
+    transform: scale(1.05);
+  }
 </style>
 </head>
 <body>
@@ -255,7 +275,12 @@
 
     <div class="result-box">
       <textarea class="result-textbox" id="keyBox" rows="1" readonly>ANOMALY70loduadro</textarea>
-      <button class="action-button" id="copyKeyBtn">Copiar</button>
+      <button class="copy-icon-btn" id="copyKeyBtn" aria-label="Copiar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
     </div>
 
   </div>
@@ -324,8 +349,8 @@
   const keyBox = document.getElementById('keyBox');
   copyKeyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(keyBox.value).then(() => {
-      copyKeyBtn.textContent = 'Copiado!';
-      setTimeout(() => copyKeyBtn.textContent = 'Copiar', 1500);
+      copyKeyBtn.style.boxShadow = '0 0 25px #00ff0090';
+      setTimeout(() => copyKeyBtn.style.boxShadow = '', 500);
     });
   });
 </script>
