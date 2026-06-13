@@ -166,6 +166,14 @@
     text-shadow: 0 0 15px #00ff0090;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
+
+  .obf-text-yellow {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #ffeb3b;
+    text-shadow: 0 0 15px #ffeb3b90;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
 </style>
 </head>
 <body>
@@ -184,6 +192,10 @@
     <img src="images/loduadroWeAreDevs.png" alt="WeAreDevs" class="obf-image" id="obfImage">
 
     <div class="obf-text" id="obfText">I mainly obfuscate my scripts using WeAreDevs (Loduadro)</div>
+
+    <img src="images/anomaly7luaosfuscator.png" alt="LuaObfuscator" class="obf-image" id="obfImage2">
+
+    <div class="obf-text-yellow" id="obfText2">I actually obfuscate my scripts with luaosfuscator, bro 😭 (anomaly7)</div>
 
     <div class="section-title" id="contribTitle">Contributors</div>
 
@@ -207,6 +219,8 @@
   const contribText = document.getElementById('contribText');
   const obfImage = document.getElementById('obfImage');
   const obfText = document.getElementById('obfText');
+  const obfImage2 = document.getElementById('obfImage2');
+  const obfText2 = document.getElementById('obfText2');
 
   function updateFade(el, startFade, fadeDistance) {
     const scrollY = window.scrollY;
@@ -245,6 +259,9 @@
 
     updateFadeFromCenter(obfImage);
     updateFadeFromCenter(obfText);
+
+    updateFadeFromCenter(obfImage2);
+    updateFadeFromCenter(obfText2);
   }
 
   window.addEventListener('scroll', onScroll);
