@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scripts - loduadro</title>
+<style>
+  @font-face {
+    font-family: 'Komika Axis';
+    src: local('Komika Axis');
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: linear-gradient(135deg, #0b1f0f 0%, #0f2e16 50%, #0b1f0f 100%);
+    color: #b6ffb0;
+    font-family: 'Komika Axis', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    gap: 30px;
+  }
+
+  h1 {
+    color: #4dff4d;
+    text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff0080;
+    font-size: 3rem;
+    text-align: center;
+  }
+
+  .result-box {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .result-textbox {
+    width: 100%;
+    background: #0f2e16;
+    color: #b6ffb0;
+    border: 2px solid #4dff4d;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 1rem;
+    resize: none;
+    box-shadow: 0 0 15px #00ff0040;
+  }
+
+  .result-textbox:focus {
+    outline: none;
+  }
+
+  .action-button {
+    background: linear-gradient(145deg, #1c4d1c, #0f3310);
+    border: 2px solid #4dff4d;
+    color: #b6ffb0;
+    font-family: 'Komika Axis', sans-serif;
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 15px #00ff0040;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .action-button:hover {
+    background: linear-gradient(145deg, #2a6e2a, #1c4d1c);
+    box-shadow: 0 0 25px #00ff0090;
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+
+  <h1>Get Key Card Instant</h1>
+
+  <div class="result-box">
+    <textarea class="result-textbox" id="loadstringBox" rows="3" readonly></textarea>
+    <button class="action-button" id="copyBtn">Copiar</button>
+  </div>
+
+  <a href="../" class="action-button">Volver al inicio</a>
+
+<script>
+  const loadstringBox = document.getElementById('loadstringBox');
+  const copyBtn = document.getElementById('copyBtn');
+
+  loadstringBox.value = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/SARBELFCB/autogetkeycardscript/refs/heads/main/get_key_card_instant_no_key.lua"))()';
+
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(loadstringBox.value).then(() => {
+      copyBtn.textContent = 'Copiado!';
+      setTimeout(() => copyBtn.textContent = 'Copiar', 1500);
+    });
+  });
+</script>
+
+</body>
+</html>
