@@ -122,6 +122,22 @@
     z-index: 200;
   }
 
+  .config-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #4dff4d;
+    font-family: 'Komika Axis', sans-serif;
+    font-size: 0.9rem;
+    text-decoration: none;
+    z-index: 200;
+    opacity: 0.7;
+  }
+
+  .config-link:hover {
+    opacity: 1;
+  }
+
   .modal-overlay {
     display: none;
     position: fixed;
@@ -238,6 +254,7 @@
 </head>
 <body>
 
+  <a href="config" class="config-link">Config</a>
   <div class="pastefy-notice">Uses Pastefy API</div>
 
   <h1>Create Raw</h1>
@@ -264,12 +281,22 @@
 
   <a href="../" class="action-button">Volver al inicio</a>
 
-  <div class="modal-overlay" id="modalOverlay">
+  <div class="modal-overlay" id="obfModalOverlay">
     <div class="modal-box">
       <p>Do you want to obfuscate the script?</p>
       <div class="modal-buttons">
         <button class="action-button" id="obfYes">Si</button>
         <button class="action-button" id="obfNo">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="trollModalOverlay">
+    <div class="modal-box">
+      <p>Do you want troll obfuscation?<br><small>(loadstring dentro de loadstring, varias veces)</small></p>
+      <div class="modal-buttons">
+        <button class="action-button" id="trollYes">Si</button>
+        <button class="action-button" id="trollNo">No</button>
       </div>
     </div>
   </div>
@@ -289,9 +316,12 @@
   const resultView = document.getElementById('resultView');
   const codeInput = document.getElementById('codeInput');
   const createBtn = document.getElementById('createBtn');
-  const modalOverlay = document.getElementById('modalOverlay');
+  const obfModalOverlay = document.getElementById('obfModalOverlay');
   const obfYes = document.getElementById('obfYes');
   const obfNo = document.getElementById('obfNo');
+  const trollModalOverlay = document.getElementById('trollModalOverlay');
+  const trollYes = document.getElementById('trollYes');
+  const trollNo = document.getElementById('trollNo');
   const loadstringModalOverlay = document.getElementById('loadstringModalOverlay');
   const modalYes = document.getElementById('modalYes');
   const modalNo = document.getElementById('modalNo');
@@ -299,6 +329,7 @@
   const copyBtn = document.getElementById('copyBtn');
   const highlightOutput = document.getElementById('highlightOutput').querySelector('code');
   const statusBox = document.getElementById('statusBox');
+  const statusText = document.getElementById('statusText');
 
   createView.classList.add('active');
 
@@ -350,19 +381,17 @@
   updateHighlight();
 
   function obfuscateCode(code) {
-    const bytes = [];
+    let escaped = '';
     for (let i = 0; i < code.length; i++) {
-      bytes.push(code.charCodeAt(i));
+      escaped += '\\' + code.charCodeAt(i);
     }
+    return `loadstring("${escaped}")()`;
+  }
 
-    const chunks = [];
-    for (let i = 0; i < bytes.length; i += 20) {
-      chunks.push(bytes.slice(i, i + 20).join(','));
-    }
-
-    const tableLines = chunks.map(c => `{${c}}`).join(',\n');
-
-    return `local _0xA={\n${tableLines}\n}\nlocal _0xB=""\nfor _0xC=1,#_0xA do\n  for _0xD=1,#_0xA[_0xC] do\n    _0xB=_0xB..string.char(_0xA[_0xC][_0xD])\n  end\nend\nloadstring(_0xB)()`;
+  function getTrollLayers() {
+    const stored = parseInt(localStorage.getItem('craws_troll_layers'), 10);
+    if (isNaN(stored) || stored < 1) return 3;
+    return stored;
   }
 
   async function createPastefyRaw(text) {
@@ -384,23 +413,51 @@
     return `https://pastefy.app/${id}/raw`;
   }
 
+  async function createTrollChain(code) {
+    let currentContent = code;
+    let currentUrl = await createPastefyRaw(currentContent);
+
+    const layers = getTrollLayers();
+
+    for (let i = 1; i < layers; i++) {
+      currentContent = `loadstring(game:HttpGet("${currentUrl}"))()`;
+      statusText.textContent = `Troll layer ${i}/${layers - 1}`;
+      currentUrl = await createPastefyRaw(currentContent);
+    }
+
+    return currentUrl;
+  }
+
   let shouldObfuscate = false;
+  let shouldTroll = false;
 
   createBtn.addEventListener('click', () => {
     const text = codeInput.value;
     if (!text.trim()) return;
-    modalOverlay.classList.add('active');
+    obfModalOverlay.classList.add('active');
   });
 
   obfYes.addEventListener('click', () => {
     shouldObfuscate = true;
-    modalOverlay.classList.remove('active');
-    loadstringModalOverlay.classList.add('active');
+    obfModalOverlay.classList.remove('active');
+    trollModalOverlay.classList.add('active');
   });
 
   obfNo.addEventListener('click', () => {
     shouldObfuscate = false;
-    modalOverlay.classList.remove('active');
+    obfModalOverlay.classList.remove('active');
+    trollModalOverlay.classList.add('active');
+  });
+
+  trollYes.addEventListener('click', () => {
+    shouldTroll = true;
+    trollModalOverlay.classList.remove('active');
+    loadstringModalOverlay.classList.add('active');
+  });
+
+  trollNo.addEventListener('click', () => {
+    shouldTroll = false;
+    trollModalOverlay.classList.remove('active');
     loadstringModalOverlay.classList.add('active');
   });
 
@@ -408,11 +465,12 @@
     loadstringModalOverlay.classList.remove('active');
     createBtn.disabled = true;
     createBtn.textContent = 'Creando...';
+    statusText.textContent = 'Creating Raw/Loadstring';
     statusBox.classList.add('active');
 
     try {
       const codeToSend = shouldObfuscate ? obfuscateCode(codeInput.value) : codeInput.value;
-      const rawUrl = await createPastefyRaw(codeToSend);
+      const rawUrl = shouldTroll ? await createTrollChain(codeToSend) : await createPastefyRaw(codeToSend);
       window.location.href = rawUrl;
     } catch (e) {
       alert('Hubo un error al crear el raw. Intenta de nuevo.');
@@ -439,15 +497,17 @@
 
     for (const text of statusTexts) {
       createBtn.textContent = text;
+      statusText.textContent = text;
       await new Promise(resolve => setTimeout(resolve, 89));
     }
 
     try {
       const codeToSend = shouldObfuscate ? obfuscateCode(codeInput.value) : codeInput.value;
-      const rawUrl = await createPastefyRaw(codeToSend);
+      const rawUrl = shouldTroll ? await createTrollChain(codeToSend) : await createPastefyRaw(codeToSend);
       const loadstringCode = `loadstring(game:HttpGet("${rawUrl}"))()`;
 
       createBtn.textContent = 'loadstring create';
+      statusText.textContent = 'loadstring create';
       await new Promise(resolve => setTimeout(resolve, 89));
 
       statusBox.classList.remove('active');
