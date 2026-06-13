@@ -464,7 +464,7 @@
   modalNo.addEventListener('click', async () => {
     loadstringModalOverlay.classList.remove('active');
     createBtn.disabled = true;
-    createBtn.textContent = 'Creando...';
+    createBtn.textContent = 'Creating...';
     statusText.textContent = 'Creating Raw/Loadstring';
     statusBox.classList.add('active');
 
@@ -473,7 +473,7 @@
       const rawUrl = shouldTroll ? await createTrollChain(codeToSend) : await createPastefyRaw(codeToSend);
       window.location.href = rawUrl;
     } catch (e) {
-      alert('Hubo un error al crear el raw. Intenta de nuevo.');
+      alert('An error occurred while creating the raw. Please try again.');
       createBtn.disabled = false;
       createBtn.textContent = 'Create Raw';
       statusBox.classList.remove('active');
@@ -515,7 +515,7 @@
       resultView.classList.add('active');
       loadstringBox.value = loadstringCode;
     } catch (e) {
-      alert('Hubo un error al crear el raw. Intenta de nuevo.');
+      alert('An error occurred while creating the raw. Please try again.');
       createBtn.disabled = false;
       createBtn.textContent = 'Create Raw';
       statusBox.classList.remove('active');
