@@ -208,6 +208,12 @@
     outline: none;
   }
 
+  .time-estimate {
+    font-size: 1rem;
+    color: #b6ffb0;
+    text-align: center;
+  }
+
   #createView, #resultView {
     display: none;
     flex-direction: column;
@@ -268,6 +274,7 @@
 
     <div class="status-box" id="statusBox">
       <div class="status-text" id="statusText">Creating Raw/Loadstring</div>
+      <div class="time-estimate" id="timeEstimate"></div>
       <div class="spinner"></div>
     </div>
   </div>
@@ -330,6 +337,7 @@
   const highlightOutput = document.getElementById('highlightOutput').querySelector('code');
   const statusBox = document.getElementById('statusBox');
   const statusText = document.getElementById('statusText');
+  const timeEstimate = document.getElementById('timeEstimate');
 
   createView.classList.add('active');
 
@@ -391,7 +399,7 @@
   function getTrollLayers() {
     const stored = parseInt(localStorage.getItem('craws_troll_layers'), 10);
     if (isNaN(stored) || stored < 1) return 3;
-    if (stored > 15) return 15;
+    if (stored > 50) return 50;
     return stored;
   }
 
@@ -441,11 +449,16 @@
     let currentUrl = await createPastefyRaw(currentContent);
 
     const layers = getTrollLayers();
+    const estimatedSeconds = (layers - 1) * 2;
+    timeEstimate.textContent = `Estimated time: ~${estimatedSeconds}s`;
 
     for (let i = 1; i < layers; i++) {
       await delay(600);
       currentContent = `loadstring(game:HttpGet("${currentUrl}"))()`;
       statusText.textContent = `Troll layer ${i}/${layers - 1}`;
+      const remainingLayers = layers - i - 1;
+      const remainingSeconds = remainingLayers * 2;
+      timeEstimate.textContent = `Time remaining: ~${remainingSeconds}s`;
       currentUrl = await createPastefyRaw(currentContent);
     }
 
