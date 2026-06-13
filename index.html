@@ -150,6 +150,22 @@
   .contributors-text b {
     color: #4dff4d;
   }
+
+  .obf-image {
+    max-width: 90%;
+    width: 400px;
+    border-radius: 16px;
+    box-shadow: 0 0 25px #00ff0050;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .obf-text {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #4dff4d;
+    text-shadow: 0 0 15px #00ff0090;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
 </style>
 </head>
 <body>
@@ -164,6 +180,10 @@
     <a href="craws/" class="scripts-button" style="text-decoration:none; display:inline-block;">Create Raw</a>
 
     <a href="scripts/" class="scripts-button" style="text-decoration:none; display:inline-block;">Scripts</a>
+
+    <img src="images/loduadroWeAreDevs.png" alt="WeAreDevs" class="obf-image" id="obfImage">
+
+    <div class="obf-text" id="obfText">I mainly obfuscate my scripts using WeAreDevs (Loduadro)</div>
 
     <div class="section-title" id="contribTitle">Contributors</div>
 
@@ -185,6 +205,8 @@
   const mainSubtitle = document.getElementById('mainSubtitle');
   const contribTitle = document.getElementById('contribTitle');
   const contribText = document.getElementById('contribText');
+  const obfImage = document.getElementById('obfImage');
+  const obfText = document.getElementById('obfText');
 
   function updateFade(el, startFade, fadeDistance) {
     const scrollY = window.scrollY;
@@ -198,11 +220,8 @@
     el.style.transform = `scale(${scale})`;
   }
 
-  function onScroll() {
-    updateFade(mainTitle, 0, window.innerHeight * 0.5);
-    updateFade(mainSubtitle, 0, window.innerHeight * 0.5);
-
-    const rect = contribTitle.getBoundingClientRect();
+  function updateFadeFromCenter(el) {
+    const rect = el.getBoundingClientRect();
     const viewportCenter = window.innerHeight / 2;
     const distanceFromCenter = Math.abs(rect.top - viewportCenter);
     const fadeRange = window.innerHeight * 0.6;
@@ -213,10 +232,19 @@
     const opacity = 1 - progress;
     const scale = 1 - (progress * 0.5);
 
-    contribTitle.style.opacity = opacity;
-    contribTitle.style.transform = `scale(${scale})`;
-    contribText.style.opacity = opacity;
-    contribText.style.transform = `scale(${scale})`;
+    el.style.opacity = opacity;
+    el.style.transform = `scale(${scale})`;
+  }
+
+  function onScroll() {
+    updateFade(mainTitle, 0, window.innerHeight * 0.5);
+    updateFade(mainSubtitle, 0, window.innerHeight * 0.5);
+
+    updateFadeFromCenter(contribTitle);
+    updateFadeFromCenter(contribText);
+
+    updateFadeFromCenter(obfImage);
+    updateFadeFromCenter(obfText);
   }
 
   window.addEventListener('scroll', onScroll);
