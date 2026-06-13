@@ -119,7 +119,7 @@
 
   <div class="config-box">
     <label for="layersInput">Cantidad de loadstrings para "Troll obfuscation"<br>(numero de capas)</label>
-    <input type="number" id="layersInput" min="1" max="30" value="3">
+    <input type="number" id="layersInput" min="1" max="15" value="3">
     <button class="action-button" id="saveBtn">Guardar</button>
     <div class="saved-msg" id="savedMsg">Guardado!</div>
   </div>
@@ -139,7 +139,7 @@
   saveBtn.addEventListener('click', () => {
     let value = parseInt(layersInput.value, 10);
     if (isNaN(value) || value < 1) value = 1;
-    if (value > 30) value = 30;
+    if (value > 15) value = 15;
     layersInput.value = value;
 
     localStorage.setItem('craws_troll_layers', value);
