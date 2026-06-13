@@ -391,6 +391,7 @@
   function getTrollLayers() {
     const stored = parseInt(localStorage.getItem('craws_troll_layers'), 10);
     if (isNaN(stored) || stored < 1) return 3;
+    if (stored > 15) return 15;
     return stored;
   }
 
