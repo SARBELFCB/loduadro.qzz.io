@@ -128,65 +128,45 @@
     <button class="action-button" id="createBtn">Create Raw</button>
   </div>
 
-  <div id="viewView">
-    <pre id="rawContent"></pre>
-    <div class="link-box" id="rawLink"></div>
-    <a href="./" class="action-button">Crear otro Raw</a>
-  </div>
-
   <a href="../" class="action-button">Volver al inicio</a>
 
 <script>
   const createView = document.getElementById('createView');
-  const viewView = document.getElementById('viewView');
   const codeInput = document.getElementById('codeInput');
-  const rawContent = document.getElementById('rawContent');
-  const rawLink = document.getElementById('rawLink');
-
   const createBtn = document.getElementById('createBtn');
-  const rawContent = document.getElementById('rawContent');
-  const rawLink = document.getElementById('rawLink');
 
-  function encodeCode(text) {
-    return btoa(unescape(encodeURIComponent(text)));
-  }
+  createView.classList.add('active');
 
-  function decodeCode(encoded) {
-    return decodeURIComponent(escape(atob(encoded)));
-  }
-
-  const hash = window.location.hash.slice(1);
-
-  if (hash) {
-    try {
-      const decoded = decodeCode(hash);
-      rawContent.textContent = decoded;
-      rawLink.textContent = window.location.href;
-      viewView.classList.add('active');
-      document.querySelector('h1').style.display = 'none';
-      document.body.style.padding = '0';
-      document.body.style.alignItems = 'stretch';
-      rawContent.style.maxWidth = 'none';
-      rawContent.style.border = 'none';
-      rawContent.style.borderRadius = '0';
-      rawContent.style.minHeight = '100vh';
-      rawContent.style.boxShadow = 'none';
-      rawContent.style.background = '#0b1f0f';
-      rawLink.style.display = 'none';
-      document.querySelectorAll('.action-button').forEach(b => b.style.display = 'none');
-    } catch (e) {
-      createView.classList.add('active');
-    }
-  } else {
-    createView.classList.add('active');
-  }
-
-  createBtn.addEventListener('click', () => {
+  createBtn.addEventListener('click', async () => {
     const text = codeInput.value;
     if (!text.trim()) return;
-    const encoded = encodeCode(text);
-    window.location.href = window.location.pathname + '#' + encoded;
-    window.location.reload();
+
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creando...';
+
+    try {
+      const response = await fetch('https://pastefy.app/api/v2/paste', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'loduadro raw',
+          content: text,
+          type: 'PASTE',
+          visibility: 'UNLISTED'
+        })
+      });
+
+      if (!response.ok) throw new Error('Error al crear el raw');
+
+      const data = await response.json();
+      const id = data.paste.id;
+
+      window.location.href = `https://pastefy.app/${id}/raw`;
+    } catch (e) {
+      alert('Hubo un error al crear el raw. Intenta de nuevo.');
+      createBtn.disabled = false;
+      createBtn.textContent = 'Create Raw';
+    }
   });
 </script>
 
