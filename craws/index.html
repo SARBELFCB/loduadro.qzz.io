@@ -35,25 +35,60 @@
     text-align: center;
   }
 
-  textarea {
+  .editor-wrapper {
+    position: relative;
     width: 100%;
     max-width: 800px;
     height: 350px;
-    background: #0f2e16;
-    color: #b6ffb0;
-    border: 2px solid #4dff4d;
-    border-radius: 12px;
+  }
+
+  .editor-wrapper textarea,
+  .editor-wrapper pre {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
     padding: 15px;
     font-family: 'Consolas', 'Courier New', monospace;
     font-size: 1rem;
-    resize: vertical;
+    line-height: 1.5;
+    border-radius: 12px;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: auto;
+  }
+
+  .editor-wrapper textarea {
+    background: transparent;
+    color: transparent;
+    caret-color: #b6ffb0;
+    border: 2px solid #4dff4d;
+    resize: none;
+    z-index: 2;
     box-shadow: 0 0 15px #00ff0040;
   }
 
-  textarea:focus {
+  .editor-wrapper textarea:focus {
     outline: none;
     box-shadow: 0 0 25px #00ff0090;
   }
+
+  .editor-wrapper pre {
+    background: #0f2e16;
+    border: 2px solid transparent;
+    color: #b6ffb0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .tok-keyword { color: #ff79c6; }
+  .tok-function { color: #66d9ff; }
+  .tok-string { color: #ffd866; }
+  .tok-comment { color: #6a9955; font-style: italic; }
+  .tok-number { color: #c8a2ff; }
 
   .action-button {
     background: linear-gradient(145deg, #1c4d1c, #0f3310);
@@ -76,48 +111,14 @@
     transform: scale(1.05);
   }
 
-  pre {
-    width: 100%;
-    max-width: 800px;
-    background: #0f2e16;
-    color: #b6ffb0;
-    border: 2px solid #4dff4d;
-    border-radius: 12px;
-    padding: 20px;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 1rem;
-    box-shadow: 0 0 15px #00ff0040;
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-x: auto;
-  }
-
-  .link-box {
-    width: 100%;
-    max-width: 800px;
-    background: #0f2e16;
-    border: 2px solid #4dff4d;
-    border-radius: 12px;
-    padding: 15px;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 0.95rem;
-    color: #b6ffb0;
-    word-break: break-all;
-    box-shadow: 0 0 15px #00ff0040;
-  }
-
-  .pastefy-badge {
+  .pastefy-notice {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: linear-gradient(145deg, #6a1b9a, #4a0072);
-    color: #e0c3ff;
+    color: #b388ff;
     font-family: 'Komika Axis', sans-serif;
     font-size: 0.9rem;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 2px solid #b388ff;
-    box-shadow: 0 0 15px #9c27b080;
+    text-shadow: 0 0 8px #9c27b080;
     z-index: 200;
   }
 
@@ -206,12 +207,15 @@
 </head>
 <body>
 
-  <div class="pastefy-badge">USE PASTEFY API</div>
+  <div class="pastefy-notice">Uses Pastefy API</div>
 
   <h1>Create Raw</h1>
 
   <div id="createView">
-    <textarea id="codeInput" placeholder="Escribe tu codigo aqui..."></textarea>
+    <div class="editor-wrapper">
+      <pre id="highlightOutput"><code></code></pre>
+      <textarea id="codeInput" placeholder="Escribe tu codigo aqui..." spellcheck="false"></textarea>
+    </div>
     <button class="action-button" id="createBtn">Create Raw</button>
   </div>
 
@@ -244,8 +248,56 @@
   const modalNo = document.getElementById('modalNo');
   const loadstringBox = document.getElementById('loadstringBox');
   const copyBtn = document.getElementById('copyBtn');
+  const highlightOutput = document.getElementById('highlightOutput').querySelector('code');
 
   createView.classList.add('active');
+
+  const LUA_KEYWORDS = ['and','break','do','else','elseif','end','false','for','function','goto','if','in','local','nil','not','or','repeat','return','then','true','until','while'];
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function highlightLua(code) {
+    const escaped = escapeHtml(code);
+    const tokenRegex = /(--\[\[[\s\S]*?\]\]|--.*$|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b\d+\.?\d*\b|\b[A-Za-z_][A-Za-z0-9_]*\b(?=\s*\()|\b[A-Za-z_][A-Za-z0-9_]*\b)/gm;
+
+    return escaped.replace(tokenRegex, (match) => {
+      if (match.startsWith('--')) {
+        return `<span class="tok-comment">${match}</span>`;
+      }
+      if (match.startsWith('"') || match.startsWith("'")) {
+        return `<span class="tok-string">${match}</span>`;
+      }
+      if (/^\d/.test(match)) {
+        return `<span class="tok-number">${match}</span>`;
+      }
+      if (LUA_KEYWORDS.includes(match)) {
+        return `<span class="tok-keyword">${match}</span>`;
+      }
+      return match;
+    }).replace(/\b([A-Za-z_][A-Za-z0-9_]*)\b(?=\()/g, (m, name) => {
+      if (LUA_KEYWORDS.includes(name)) return m;
+      return `<span class="tok-function">${name}</span>`;
+    });
+  }
+
+  function updateHighlight() {
+    let code = codeInput.value;
+    if (code.endsWith('\n')) code += ' ';
+    highlightOutput.innerHTML = highlightLua(code);
+  }
+
+  codeInput.addEventListener('input', updateHighlight);
+  codeInput.addEventListener('scroll', () => {
+    highlightOutput.parentElement.scrollTop = codeInput.scrollTop;
+    highlightOutput.parentElement.scrollLeft = codeInput.scrollLeft;
+  });
+
+  updateHighlight();
 
   async function createPastefyRaw(text) {
     const response = await fetch('https://pastefy.app/api/v2/paste', {
